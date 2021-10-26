@@ -1,0 +1,143 @@
+# Namespace for the deployment
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: samtholiya
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: samtholiya
+  name: mysql-secret
+type: kubernetes.io/basic-auth
+stringData:
+  password: root
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  namespace: samtholiya
+  name: mysql-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/d/mydata"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  namespace: samtholiya
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: samtholiya
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:8.0.26
+        imagePullPolicy: IfNotPresent
+        name: mysql
+        env:
+        - name: MYSQL_DATABASE
+          value: factory
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: samtholiya
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver
+  namespace: samtholiya
+  labels:
+    app: factory
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: factory
+  template:
+    metadata:
+      labels:
+        app: factory
+    spec:
+      containers:
+      - name: factory
+        image: sam-factory:latest
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: MYSQL_USERNAME
+          value: root
+        - name: MYSQL_HOST
+          value: mysql:3306
+        - name: MYSQL_DATABASE
+          value: factory
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: factory
+  namespace: samtholiya
+spec:
+  type: LoadBalancer
+  selector:
+    app: factory
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

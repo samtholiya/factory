@@ -1,0 +1,9 @@
+key,value,machine_key
+TS_setpoint_tail_length,15,ajoparametrit
+perforation_length,16.5,ajoparametrit
+core_interference,15,ajoparametrit
+number_of_sheets,17.7,ajoparametrit
+log_diameter,15,aufwickler
+speed,35.6,aufwickler
+core_interference,25.7,wickelkopf
+speed,27.7,wickelkopf

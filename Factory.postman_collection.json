@@ -1,0 +1,134 @@
+{
+	"info": {
+		"_postman_id": "f9341ffe-7eb2-4fd5-89aa-d50b36ea74e8",
+		"name": "Factory",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Machines with latest parameters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/machine?page=0&size=10",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"machine"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0",
+							"description": "Optional Parameter\nDefault: 0\n"
+						},
+						{
+							"key": "size",
+							"value": "10",
+							"description": "Optional Parameter\nDefault 10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Machines with parameters summary",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api/v1/machine/summary?page=0&size=10&minutes=10",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"machine",
+						"summary"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0",
+							"description": "Optional Parameter\nDefault 0"
+						},
+						{
+							"key": "size",
+							"value": "10",
+							"description": "Optional Paramter\nDefault 10"
+						},
+						{
+							"key": "minutes",
+							"value": "10",
+							"description": "Optional Parameter\nDefault 10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Machine",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"<<machine name>>\",\r\n    \"key\":\"<<key>>\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/machine",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"machine"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Parameter",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"machineKey\":\"<<machineKey>>\",\r\n    \"parameters\": {\r\n        \"parameter1\":<<some float number>>,\r\n        \"parameter2\":<<some float number>>\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/v1/machine/parameter",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"machine",
+						"parameter"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
